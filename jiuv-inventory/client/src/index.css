@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cyber-bg text-cyber-text antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* 滚动条隐藏 */
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-cyber-surface border border-cyber-border rounded-xl p-4;
+  }
+
+  .btn {
+    @apply px-4 py-2.5 rounded-lg font-medium transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100;
+  }
+
+  .btn-primary {
+    @apply btn bg-cyber-gold text-cyber-bg hover:shadow-glow-gold;
+  }
+
+  .btn-secondary {
+    @apply btn bg-cyber-surface2 text-cyber-text border border-cyber-border;
+  }
+
+  .btn-danger {
+    @apply btn bg-cyber-danger/20 text-cyber-danger border border-cyber-danger/30;
+  }
+
+  .input {
+    @apply w-full bg-cyber-bg border border-cyber-border rounded-lg px-3 py-2.5 text-cyber-text placeholder-cyber-text-dim focus:border-cyber-gold focus:outline-none transition-colors;
+  }
+
+  .label {
+    @apply block text-sm text-cyber-text-dim mb-1.5 font-medium;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply badge bg-cyber-gold/20 text-cyber-gold;
+  }
+
+  .badge-danger {
+    @apply badge bg-cyber-danger/20 text-cyber-danger;
+  }
+
+  .badge-success {
+    @apply badge bg-cyber-success/20 text-cyber-success;
+  }
+}
+
+/* 渐变标题 */
+.gradient-gold {
+  background: linear-gradient(135deg, #e6a817 0%, #f5a623 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

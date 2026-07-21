@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: jiuv-db
+    environment:
+      POSTGRES_USER: jiuv
+      POSTGRES_PASSWORD: jiuv123
+      POSTGRES_DB: jiuv_inventory
+    ports:
+      - '5432:5432'
+    volumes:
+      - jiuv_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U jiuv -d jiuv_inventory']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: jiuv-server
+    environment:
+      DATABASE_URL: postgresql://jiuv:jiuv123@db:5432/jiuv_inventory?schema=public
+      JWT_SECRET: jiuv-secret-change-in-production
+      PORT: 3001
+      CLIENT_URL: http://localhost:8080
+    ports:
+      - '3001:3001'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: jiuv-client
+    ports:
+      - '8080:80'
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  jiuv_pgdata:

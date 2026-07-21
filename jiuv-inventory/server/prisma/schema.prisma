@@ -1,0 +1,160 @@
+// 九维进销存 — Prisma Schema
+// 沿用 JBM Beer/Keg/Tap 三层数据模型
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ 用户 ============
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  password  String
+  name      String
+  role      String   @default("STAFF") // OWNER | STAFF
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ============ 供应商 ============
+model Supplier {
+  id        String          @id @default(cuid())
+  name      String
+  contact   String?
+  phone     String?
+  address   String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  kegs           Keg[]
+  purchaseOrders PurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+// ============ 啤酒 SKU ============
+model Beer {
+  id          String   @id @default(cuid())
+  name        String
+  brewery     String
+  style       String
+  abv         Float    // 酒精度 %
+  plato       Float    // 原麦汁浓度 °P
+  ibu         Int      // 苦度
+  priceLarge  Int      // 大杯价格（整数分）
+  priceMedium Int      // 中杯价格（整数分）
+  description String?
+  imageKey    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  kegs     Keg[]
+  saleItems SaleOrderItem[]
+  purchaseItems PurchaseOrderItem[]
+
+  @@map("beers")
+}
+
+// ============ Keg 批次库存 ============
+model Keg {
+  id                 String   @id @default(cuid())
+  beerId             String
+  beer               Beer     @relation(fields: [beerId], references: [id])
+  batchNo            String
+  volumeLiters       Float    // 当前剩余升数
+  initialVolumeLiters Float   // 初始升数
+  costCents          Int      // 成本（整数分）
+  supplierId         String?
+  supplier           Supplier? @relation(fields: [supplierId], references: [id])
+  tapId              Int?     @unique // 映射龙头 1-11（非外键，仅记录编号）
+  receivedAt         DateTime @default(now())
+  isEmpty            Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  purchaseItems PurchaseOrderItem[]
+  tap          Tap?          @relation("KegTap", fields: [tapId], references: [id])
+
+  @@index([beerId])
+  @@index([tapId])
+  @@map("kegs")
+}
+
+// ============ 龙头 ============
+model Tap {
+  id        Int      @id // 1-11
+  kegId     String?  @unique
+  keg       Keg?     @relation("KegTap")
+  status    String   @default("INACTIVE") // ACTIVE | INACTIVE
+  updatedAt DateTime @updatedAt
+
+  @@map("taps")
+}
+
+// ============ 进货单 ============
+model PurchaseOrder {
+  id            String             @id @default(cuid())
+  supplierId    String?
+  supplier      Supplier?          @relation(fields: [supplierId], references: [id])
+  status        String             @default("PENDING") // PENDING | RECEIVED
+  totalCostCents Int
+  items         PurchaseOrderItem[]
+  note          String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id            String        @id @default(cuid())
+  orderId       String
+  order         PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  beerId        String
+  beer          Beer          @relation(fields: [beerId], references: [id])
+  batchNo       String
+  volumeLiters  Float
+  costCents     Int
+  kegId         String?
+  keg           Keg?          @relation(fields: [kegId], references: [id])
+
+  @@map("purchase_order_items")
+}
+
+// ============ 销售单 ============
+model SaleOrder {
+  id          String          @id @default(cuid())
+  orderNo     String          @unique
+  status      String          @default("COMPLETED") // COMPLETED | REFUNDED
+  totalCents  Int
+  items       SaleOrderItem[]
+  note        String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([createdAt])
+  @@map("sale_orders")
+}
+
+model SaleOrderItem {
+  id             String    @id @default(cuid())
+  orderId        String
+  order          SaleOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  beerId         String
+  beer           Beer      @relation(fields: [beerId], references: [id])
+  cupSize        String    // LARGE | MEDIUM
+  volumeMl       Int       // 杯容量 ml
+  priceCents     Int       // 单价（整数分）
+  quantity       Int
+  subtotalCents  Int
+
+  @@map("sale_order_items")
+}
