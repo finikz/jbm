@@ -8,8 +8,6 @@ services:
       POSTGRES_USER: jiuv
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: jiuv_inventory
-    ports:
-      - '5432:5432'
     volumes:
       - jiuv_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -29,8 +27,6 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       PORT: 3001
       CLIENT_URL: ${CLIENT_URL:-http://localhost:8080}
-    ports:
-      - '3001:3001'
     depends_on:
       db:
         condition: service_healthy
