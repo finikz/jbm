@@ -6,7 +6,7 @@ COPY shared/package*.json shared/
 RUN npm install
 COPY server server
 COPY shared shared
-RUN npm run build:shared && npm run build:server
+RUN npm run build:shared && cd server && npx prisma generate && cd .. && npm run build:server
 
 FROM node:22-alpine
 WORKDIR /app
