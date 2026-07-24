@@ -58,8 +58,8 @@ router.post('/kegs', asyncHandler(async (req: AuthRequest, res) => {
       where: { id: tapId },
       include: { keg: true },
     });
-    if (existingTap?.kegId && existingTap.keg && !existingTap.keg.isEmpty) {
-      return sendError(res, `龙头 ${tapId} 已被占用`, 409);
+    if (existingTap?.kegId) {
+      return sendError(res, `龙头 ${tapId} 已被占用，请先卸下旧 Keg`, 409);
     }
   }
 
@@ -97,12 +97,8 @@ router.post('/taps/:tapId/mount', asyncHandler(async (req: AuthRequest, res) => 
 
   // 检查目标龙头是否被占用
   const tap = await prisma.tap.findUnique({ where: { id: tapId }, include: { keg: true } });
-  if (tap?.kegId && tap.keg && !tap.keg.isEmpty) {
-    // 卸下旧 Keg
-    await prisma.keg.update({
-      where: { id: tap.kegId },
-      data: { tapId: null },
-    });
+  if (tap?.kegId) {
+    return sendError(res, `龙头 ${tapId} 已被占用，请先卸下旧 Keg`, 409);
   }
 
   // 检查 Keg 是否已挂在其他龙头
