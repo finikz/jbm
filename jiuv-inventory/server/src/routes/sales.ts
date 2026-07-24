@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
 import { authMiddleware, type AuthRequest } from '../lib/auth';
@@ -78,7 +77,7 @@ router.post('/', asyncHandler(async (req: AuthRequest, res) => {
         items: { create: orderItems.map(({ totalVolumeMl, ...rest }) => rest) } },
       include: { items: { include: { beer: true } } },
     });
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  }, { isolationLevel: 'Serializable' });
 
   return sendSuccess(res, { ...order, createdAt: order.createdAt.toISOString(), updatedAt: order.updatedAt.toISOString() }, 201);
 }));
