@@ -5,7 +5,7 @@
  */
 import { useAuthStore } from '../store/auth';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://1.14.253.219:3001/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export async function api<T = unknown>(
   path: string,
