@@ -41,7 +41,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 ## 第四步：部署后端
 
 1. **Add Service** → **Git Repository**
-2. 选择 `finikz/jiuv-inventory` 仓库
+2. 选择 `finikz/jbm` 仓库
 3. 配置：
    - **Root Directory**: `server`
    - Zeabur 会自动检测 Node.js + package.json
@@ -50,7 +50,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
    | Key | Value |
    |---|---|
    | `DATABASE_URL` | 第三步复制的 PostgreSQL Connection URL |
-   | `JWT_SECRET` | `jiuv-secret-2024-abc` |
+   | `JWT_SECRET` | 使用密码管理器生成的随机长字符串 |
    | `PORT` | `3001` |
    | `CLIENT_URL` | 先填 `https://jiuv-client.zeabur.app`（第五步后改） |
 
@@ -110,9 +110,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 
 > **https://jiuv-client-xxx.zeabur.app**
 
-登录信息：
-- 手机号：`13800000001`
-- 密码：`jiuv2024`
+初始化账号密码请通过安全渠道设置 `SEED_OWNER_PASSWORD`，不要使用仓库中的示例密码。
 
 **添加到主屏**（变成 App）：
 - iPhone：Safari → 分享 → 添加到主屏幕
