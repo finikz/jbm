@@ -231,7 +231,7 @@ async function main() {
 
 
   console.log('\n🎉 种子数据生成完成！');
-  console.log(`   登录账号: 13800000001 / jiuv2024`);
+  console.log('   登录账号已创建，请通过安全渠道获取密码');
 }
 
 main()
