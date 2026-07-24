@@ -43,7 +43,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 1. **Add Service** → **Git Repository**
 2. 选择 `finikz/jbm` 仓库
 3. 配置：
-   - **Root Directory**: 仓库根目录（留空）
+   - **Root Directory**: `jiuv-inventory`
    - Zeabur 会使用根目录的 workspace 配置
 4. 环境变量（Variables 标签）：
 
