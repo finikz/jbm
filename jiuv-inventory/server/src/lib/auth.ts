@@ -32,7 +32,7 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
 
   const token = authHeader.substring(7);
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as {
+    const decoded = jwt.verify(token, getJwtSecret()) as {
       id: string;
       phone: string;
       role: string;
