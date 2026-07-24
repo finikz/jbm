@@ -10,7 +10,7 @@
 | 后端 | Node.js + Express + Prisma ORM |
 | 数据库 | PostgreSQL |
 | 认证 | JWT（手机号 + 密码） |
-| 部署 | 前端 Vercel / 后端 Render / 数据库 Supabase |
+| 部署 | Docker Compose / Zeabur |
 
 ## 数据模型
 
