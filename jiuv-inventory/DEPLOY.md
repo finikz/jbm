@@ -43,8 +43,8 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 1. **Add Service** → **Git Repository**
 2. 选择 `finikz/jbm` 仓库
 3. 配置：
-   - **Root Directory**: `server`
-   - Zeabur 会自动检测 Node.js + package.json
+   - **Root Directory**: 仓库根目录（留空）
+   - Zeabur 会使用根目录的 workspace 配置
 4. 环境变量（Variables 标签）：
 
    | Key | Value |
@@ -56,11 +56,11 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 
 5. **Build Command**（Settings）：
    ```
-   cd ../shared && npm install && npm run build && cd ../server && npm install && npx prisma db push && npm run build
+   npm install && npm run build:shared && npm run build:server && npx prisma db push --schema server/prisma/schema.prisma
    ```
 6. **Start Command**：
    ```
-   node dist/index.js
+   node server/dist/index.js
    ```
 7. 部署完成后，在 **Networking** 标签：
    - 开启公网访问
@@ -69,7 +69,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 8. **初始化种子数据**：
    - 后端服务的 **Shell** 或 **Console** 中运行：
      ```
-     npx tsx src/seed.ts
+     npx tsx server/src/seed.ts
      ```
    - 看到 `🎉 种子数据生成完成` 即成功
 
@@ -79,7 +79,7 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 
 1. **Add Service** → **Git Repository** → 选择同一个仓库
 2. 配置：
-   - **Root Directory**: `client`
+   - **Root Directory**: 仓库根目录（留空）
 3. 环境变量：
 
    | Key | Value |
@@ -88,9 +88,9 @@ Zeabur（前端 + 后端 + PostgreSQL，一站式）
 
 4. **Build Command**：
    ```
-   cd ../shared && npm install && npm run build && cd ../client && npm install && npm run build
+   npm install && npm run build:client
    ```
-5. **Output Directory**: `dist`
+5. **Output Directory**: `client/dist
 6. 部署完成 → **Networking** 开启公网访问
 7. 记录前端域名，如 `https://jiuv-client-xxx.zeabur.app`
 
