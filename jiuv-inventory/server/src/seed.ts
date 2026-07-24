@@ -7,10 +7,14 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === 'production' && !process.env.SEED_OWNER_PASSWORD) {
+    throw new Error('生产环境运行 seed 需要设置 SEED_OWNER_PASSWORD');
+  }
+  const seedPassword = process.env.SEED_OWNER_PASSWORD || 'jiuv2024';
   console.log('🌱 开始生成种子数据...');
 
   // ---- 用户 ----
-  const passwordHash = await bcrypt.hash('jiuv2024', 10);
+  const passwordHash = await bcrypt.hash(seedPassword, 10);
   const owner = await prisma.user.upsert({
     where: { phone: '13800000001' },
     update: {},
@@ -200,43 +204,31 @@ async function main() {
   }
   console.log(`  ✅ Keg 批次: ${kegs.length} 个（龙头 1-5 已激活）`);
 
-  // ---- 模拟销售记录 ----
+  // ---- 模拟销售记录（可重复执行） ----
   const today = new Date();
   for (let day = 0; day < 7; day++) {
     const date = new Date(today);
     date.setDate(date.getDate() - day);
-    const orderCount = Math.floor(Math.random() * 5) + 2;
-
+    const orderCount = 3;
     for (let i = 0; i < orderCount; i++) {
-      const beerChoice = beers[Math.floor(Math.random() * beers.length)];
-      const isLarge = Math.random() > 0.5;
+      const beerChoice = beers[(day * orderCount + i) % beers.length];
+      const isLarge = (day + i) % 2 === 0;
       const priceCents = isLarge ? beerChoice.priceLarge : beerChoice.priceMedium;
       const volumeMl = isLarge ? 500 : 350;
-      const quantity = Math.floor(Math.random() * 3) + 1;
-
-      const orderNo = `ORD-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(day * 10 + i).padStart(4, '0')}`;
-
-      await prisma.saleOrder.create({
-        data: {
-          orderNo,
-          status: 'COMPLETED',
-          totalCents: priceCents * quantity,
-          createdAt: date,
-          items: {
-            create: {
-              beerId: beerChoice.id,
-              cupSize: isLarge ? 'LARGE' : 'MEDIUM',
-              volumeMl,
-              priceCents,
-              quantity,
-              subtotalCents: priceCents * quantity,
-            },
-          },
+      const quantity = ((day + i) % 3) + 1;
+      const orderNo = `SEED-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      await prisma.saleOrder.upsert({
+        where: { orderNo },
+        update: {},
+        create: {
+          orderNo, status: 'COMPLETED', totalCents: priceCents * quantity, createdAt: date,
+          items: { create: { beerId: beerChoice.id, cupSize: isLarge ? 'LARGE' : 'MEDIUM',
+            volumeMl, priceCents, quantity, subtotalCents: priceCents * quantity } },
         },
       });
     }
   }
-  console.log(`  ✅ 模拟近 7 天销售数据`);
+
 
   console.log('\n🎉 种子数据生成完成！');
   console.log(`   登录账号: 13800000001 / jiuv2024`);
