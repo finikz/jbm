@@ -11,6 +11,7 @@ RUN npm run build:shared && cd server && npx prisma generate && cd .. && npm run
 
 FROM node:22-alpine
 WORKDIR /app
+RUN apk add --no-cache openssl
 COPY package*.json ./
 COPY server/package*.json server/
 COPY shared/package*.json shared/
