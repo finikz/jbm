@@ -22,12 +22,12 @@ router.post('/login', asyncHandler(async (req, res) => {
   const { phone, password } = parsed.data;
   const user = await prisma.user.findUnique({ where: { phone } });
   if (!user) {
-    return sendError(res, '用户不存在', 404);
+    return sendError(res, '手机号或密码错误', 401);
   }
 
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    return sendError(res, '密码错误', 401);
+    return sendError(res, '手机号或密码错误', 401);
   }
 
   const role = user.role as 'OWNER' | 'STAFF';
