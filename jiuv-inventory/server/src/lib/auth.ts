@@ -10,10 +10,16 @@ export interface AuthRequest extends Request {
   };
 }
 
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET is required');
+  return secret;
+}
+
 export function generateToken(user: User): string {
   return jwt.sign(
     { id: user.id, phone: user.phone, role: user.role },
-    process.env.JWT_SECRET || 'fallback-secret',
+    getJwtSecret(),
     { expiresIn: '7d' }
   );
 }
