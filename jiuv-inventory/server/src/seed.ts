@@ -10,16 +10,17 @@ async function main() {
   if (process.env.NODE_ENV === 'production' && !process.env.SEED_OWNER_PASSWORD) {
     throw new Error('生产环境运行 seed 需要设置 SEED_OWNER_PASSWORD');
   }
+  const seedPhone = process.env.SEED_OWNER_PHONE || '13800000001';
   const seedPassword = process.env.SEED_OWNER_PASSWORD || 'jiuv2024';
   console.log('🌱 开始生成种子数据...');
 
   // ---- 用户 ----
   const passwordHash = await bcrypt.hash(seedPassword, 10);
   const owner = await prisma.user.upsert({
-    where: { phone: '13800000001' },
+    where: { phone: seedPhone },
     update: {},
     create: {
-      phone: '13800000001',
+      phone: seedPhone,
       password: passwordHash,
       name: '九维店主',
       role: 'OWNER',
